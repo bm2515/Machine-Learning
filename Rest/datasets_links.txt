@@ -1,0 +1,10 @@
+1) Traffic Speed Data
+https://data.cityofnewyork.us/Transportation/Real-Time-Traffic-Speed-Data/qkm5-nuaq 
+
+
+2) weather dataset: JFK
+https://www7.ncdc.noaa.gov/CDO/cdopoemain.cmd?datasetabbv=DS3505  
+
+3) Speed limits:
+https://data.cityofnewyork.us/Transportation/VZV_Speed-Limits/7n5j-865y
+  

@@ -1,0 +1,216 @@
+
+This query created the merged table in Impala for us:
+
+create external table mergedtable (id int,speed_mph double,travelTime_secs double,observationTime bigint,
+month string,dayOfWeek string,hour int,latitudeStart double,longitudeStart double,latitudeEnd double,
+longitudeEnd double,borough string,address string,windspeed double,visibility double,temperature double,pcp double,
+speedLimit double, isSignShown string, differenceSpeedAndLimit double)
+row format delimited fields terminated by ','
+location '/user/ry856/sharedData/FinalMergedData/speedlimit_weather_trafficspeed';
+
+table schema:
++-------------------------+--------+---------+
+| name                    | type   | comment |
++-------------------------+--------+---------+
+| id                      | int    |         |
+| speed_mph               | double |         |
+| traveltime_secs         | double |         |
+| observationtime         | bigint |         |
+| month                   | string |         |
+| dayofweek               | string |         |
+| hour                    | int    |         |
+| latitudestart           | double |         |
+| longitudestart          | double |         |
+| latitudeend             | double |         |
+| longitudeend            | double |         |
+| borough                 | string |         |
+| address                 | string |         |
+| windspeed               | double |         |
+| visibility              | double |         |
+| temperature             | double |         |
+| pcp                     | double |         |
+| speedlimit              | double |         |
+| issignshown             | string |         |
+| differencespeedandlimit | double |         |
++-------------------------+--------+---------+
+number of rows 25,932,393
+
+
+First, we wanted to see how many times drivers drive by 15 miles or move over the limit.
+We grouped the query by day of the week and counted the number of the event described above.
+We clearly see that the distribution is not constant and Sunday, Tuesday and Wednesday are the most
+popular days for violations.
+
++-----------+--------------------------------+
+| dayofweek | count(Speed minus Speed Limit) |
++-----------+--------------------------------+
+| FRIDAY    | 1584815                        |
+| WEDNESDAY | 1711286                        |
+| MONDAY    | 1680328                        |
+| TUESDAY   | 1754636                        |
+| THURSDAY  | 1680111                        |
+| SATURDAY  | 1632979                        |
+| SUNDAY    | 1817388                        |
++-----------+--------------------------------+
+
+One assumption we made was that since the dataset is big, we have an equal number of data-points on each day
+(e.g. the data is uniformly distributed) and this query proves it:
+
+SELECT A.id, A.address, cnt
+    FROM (SELECT id, address, COUNT(differencespeedandlimit) as cnt
+              FROM mergedtable
+              GROUP BY id, address
+    ) A
+    GROUP BY A.id, A.address, cnt
+    ORDER BY cnt DESC
+    LIMIT 50;
+
+
+
+Certainly, the queries above don't tell the whole story, but the first recommendation is for police officers to increase presence
+on Sundays, Tuesdays and Wednesdays throughout NYC.
+
+
+
+The next
+SELECT id, borough, address, count(*) AS num_violations
+    FROM mergedtable
+    WHERE differencespeedandlimit > 15
+    GROUP BY id, borough, address
+    HAVING num_violations > 100000
+    ORDER BY num_violations DESC
+    LIMIT 10;
+
+
+ These are the locations with the most violations. Bronx is a top violator and one reason could be light presence
+ of police forces.
++-----+---------------+----------------------------------------------------+----------------+
+| id  | borough       | address                                            | num_violations |
++-----+---------------+----------------------------------------------------+----------------+
+| 184 | bronx         | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE           | 206766         |
+| 263 | brooklyn      | GOW S VNB W 92ND STREET - BKLYN GANTRY LOWER LEVEL | 196921         |
+| 129 | bronx         | BE N STRATFORD AVENUE - CASTLE HILL AVE            | 195870         |
+| 295 | bronx         | HRP N LAFAYETTE AVENUE - E TREMONT AVENUE          | 187203         |
+| 402 | queens        | TNB N Queens Anchorage - Toll Plaza                | 186051         |
+| 178 | bronx         | CBE E CASTLE HILL AVE - BE N WATERBURY AVE         | 184672         |
+| 434 | staten island | WSE N VICTORY BLVD - SOUTH AVENUE                  | 183644         |
+| 167 | queens        | BWB S Queens Anchorage - WSE S Exit 14 (Linden Pl) | 182811         |
+| 433 | staten island | WSE N TYRELLAN AVENUE - BLOOMINGDALE ROAD          | 182095         |
+| 165 | bronx         | BWB N Toll Plaza - HRP N Lafayatte Ave             | 181794         |
++-----+---------------+----------------------------------------------------+----------------+
+
+Then, we decided to combine violations by location and day of week (the previous queries) to see if
+we could narrow down our search:
+SELECT A.id, borough, address, A.dayofweek, A.cnt AS 'count_violations'
+    FROM (SELECT id, borough, address, dayofweek, COUNT(differencespeedandlimit) cnt
+              FROM mergedtable
+              WHERE differencespeedandlimit > 15
+              GROUP BY id, dayofweek, borough, address
+    ) A
+    GROUP BY A.cnt, A.id, A.dayofweek, A.borough, A.address
+    HAVING A.cnt > 10000
+    ORDER BY cnt DESC, dayofweek
+    LIMIT 20;
+
++-----+---------------+-------------------------------------------------------------------+-----------+------------------+
+| id  | borough       | address                                                           | dayofweek | count_violations |
++-----+---------------+-------------------------------------------------------------------+-----------+------------------+
+| 184 | bronx         | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                          | TUESDAY   | 31779            |
+| 184 | bronx         | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                          | WEDNESDAY | 31416            |
+| 184 | bronx         | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                          | THURSDAY  | 31276            |
+| 184 | bronx         | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                          | FRIDAY    | 29978            |
+| 129 | bronx         | BE N STRATFORD AVENUE - CASTLE HILL AVE                           | THURSDAY  | 29762            |
+| 263 | brooklyn      | GOW S VNB W 92ND STREET - BKLYN GANTRY LOWER LEVEL                | TUESDAY   | 29402            |
+| 129 | bronx         | BE N STRATFORD AVENUE - CASTLE HILL AVE                           | TUESDAY   | 29343            |
+| 263 | brooklyn      | GOW S VNB W 92ND STREET - BKLYN GANTRY LOWER LEVEL                | THURSDAY  | 28893            |
+| 129 | bronx         | BE N STRATFORD AVENUE - CASTLE HILL AVE                           | SUNDAY    | 28843            |
+| 129 | bronx         | BE N STRATFORD AVENUE - CASTLE HILL AVE                           | WEDNESDAY | 28791            |
+| 263 | brooklyn      | GOW S VNB W 92ND STREET - BKLYN GANTRY LOWER LEVEL                | SUNDAY    | 28521            |
+| 423 | queens        | VWE N MP6.39 (Exit 11 Jewel Ave) - MP8.65 (Exit 13 Northern Blvd) | SUNDAY    | 28478            |
+| 263 | brooklyn      | GOW S VNB W 92ND STREET - BKLYN GANTRY LOWER LEVEL                | WEDNESDAY | 28472            |
+| 295 | bronx         | HRP N LAFAYETTE AVENUE - E TREMONT AVENUE                         | WEDNESDAY | 28429            |
+| 184 | bronx         | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                          | MONDAY    | 28427            |
+| 402 | queens        | TNB N Queens Anchorage - Toll Plaza                               | TUESDAY   | 28424            |
+| 178 | bronx         | CBE E CASTLE HILL AVE - BE N WATERBURY AVE                        | TUESDAY   | 28401            |
+| 295 | bronx         | HRP N LAFAYETTE AVENUE - E TREMONT AVENUE                         | THURSDAY  | 28345            |
+| 263 | brooklyn      | GOW S VNB W 92ND STREET - BKLYN GANTRY LOWER LEVEL                | MONDAY    | 28339            |
+| 434 | staten island | WSE N VICTORY BLVD - SOUTH AVENUE                                 | THURSDAY  | 28098            |
++-----+---------------+-------------------------------------------------------------------+-----------+------------------+
+
+From the top 20 locations/days, we see that Bronx and Brooklyn are leading and Tuesday, Wednesday and Sunday are the
+most popular days for speed violators. We can see that some roads (id 184, 129 and 263) are specifically popular.
+
+What makes these roads to have the most number of violations?
+
+We would like to go a step further to narrow down the presence of police cars on the roads and on the days that we
+concluded in the previous query. Let's see what are the most popular times of the day for violations with this query:
+
+
+SELECT A.id, A.borough, A.address, A.dayofweek, A.hour, cnt
+    FROM (SELECT id, borough, address, dayofweek, hour, COUNT(differencespeedandlimit) cnt
+              FROM mergedtable
+              WHERE differencespeedandlimit > 15
+              GROUP BY id, hour, dayofweek, borough, address
+    ) A
+    GROUP BY A.cnt, A.id, A.hour, A.dayofweek, A.borough, A.address
+    ORDER BY cnt DESC, hour ASC
+    LIMIT 40;
+
+    +-----+----------+-------------------------------------------------------------------------------+-----------+------+------+
+    | id  | borough  | address                                                                       | dayofweek | hour | cnt  |
+    +-----+----------+-------------------------------------------------------------------------------+-----------+------+------+
+    | 178 | bronx    | CBE E CASTLE HILL AVE - BE N WATERBURY AVE                                    | THURSDAY  | 6    | 1613 |
+    | 167 | queens   | BWB S Queens Anchorage - WSE S Exit 14 (Linden Pl)                            | THURSDAY  | 2    | 1601 |
+    | 178 | bronx    | CBE E CASTLE HILL AVE - BE N WATERBURY AVE                                    | THURSDAY  | 2    | 1597 |
+    | 451 | queens   | Whitestone Expwy N Exit 14 (Linden Pl) - BWB N Queens Anchorage               | THURSDAY  | 2    | 1597 |
+    | 211 | queens   | CVE NB GCP - WILLETS PT BLVD                                                  | FRIDAY    | 9    | 1591 |
+    | 184 | bronx    | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                                      | WEDNESDAY | 10   | 1590 |
+    | 263 | brooklyn | GOW S VNB W 92ND STREET - BKLYN GANTRY LOWER LEVEL                            | THURSDAY  | 6    | 1584 |
+    | 184 | bronx    | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                                      | THURSDAY  | 6    | 1577 |
+    | 185 | bronx    | CBE W CASTLE HILL AVENUE - TAYLOR AVENUE                                      | THURSDAY  | 2    | 1572 |
+    | 184 | bronx    | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                                      | TUESDAY   | 7    | 1567 |
+    | 184 | bronx    | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                                      | THURSDAY  | 2    | 1562 |
+    | 426 | queens   | VWE S MP4.63 (Exit 6 Jamaica Ave) - MP2.66 (Exit 2 Roackaway Blvd)            | THURSDAY  | 2    | 1562 |
+    | 167 | queens   | BWB S Queens Anchorage - WSE S Exit 14 (Linden Pl)                            | THURSDAY  | 21   | 1553 |
+    | 211 | queens   | CVE NB GCP - WILLETS PT BLVD                                                  | THURSDAY  | 6    | 1551 |
+    | 178 | bronx    | CBE E CASTLE HILL AVE - BE N WATERBURY AVE                                    | THURSDAY  | 21   | 1548 |
+    | 423 | queens   | VWE N MP6.39 (Exit 11 Jewel Ave) - MP8.65 (Exit 13 Northern Blvd)             | THURSDAY  | 2    | 1546 |
+    | 178 | bronx    | CBE E CASTLE HILL AVE - BE N WATERBURY AVE                                    | THURSDAY  | 5    | 1545 |
+    | 170 | queens   | Belt Pkwy W 182nd St - JFK Expressway                                         | THURSDAY  | 2    | 1544 |
+    | 184 | bronx    | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                                      | TUESDAY   | 10   | 1542 |
+    | 142 | bronx    | BE S Griswold - Castle Hill Avenue                                            | THURSDAY  | 2    | 1541 |
+    | 129 | bronx    | BE N STRATFORD AVENUE - CASTLE HILL AVE                                       | THURSDAY  | 6    | 1540 |
+    | 184 | bronx    | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                                      | WEDNESDAY | 11   | 1539 |
+    | 129 | bronx    | BE N STRATFORD AVENUE - CASTLE HILL AVE                                       | THURSDAY  | 5    | 1537 |
+    | 311 | queens   | LIE E 84TH ST - 108TH ST                                                      | THURSDAY  | 2    | 1535 |
+    | 263 | brooklyn | GOW S VNB W 92ND STREET - BKLYN GANTRY LOWER LEVEL                            | TUESDAY   | 7    | 1531 |
+    | 263 | brooklyn | GOW S VNB W 92ND STREET - BKLYN GANTRY LOWER LEVEL                            | TUESDAY   | 11   | 1531 |
+    | 207 | queens   | CIP S Hempstead Tpk - Laurelton Pkwy @ SSP                                    | THURSDAY  | 6    | 1530 |
+    | 184 | bronx    | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                                      | THURSDAY  | 5    | 1527 |
+    | 263 | brooklyn | GOW S VNB W 92ND STREET - BKLYN GANTRY LOWER LEVEL                            | WEDNESDAY | 10   | 1527 |
+    | 126 | bronx    | BE N Castle Hill Avenue - Griswold Ave                                        | THURSDAY  | 5    | 1525 |
+    | 184 | bronx    | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                                      | FRIDAY    | 9    | 1525 |
+    | 422 | queens   | VWE N MP4.63 (Exit 6 - Jamaica Ave) - MP6.39 (Exit 11 Jewel Ave)              | THURSDAY  | 2    | 1524 |
+    | 451 | queens   | Whitestone Expwy N Exit 14 (Linden Pl) - BWB N Queens Anchorage               | THURSDAY  | 5    | 1518 |
+    | 453 | queens   | Whitestone Expwy S Exit 14 (Linden Pl) - VWE S MP8.65 (Exit 13 Northern Blvd) | THURSDAY  | 2    | 1516 |
+    | 428 | queens   | VWE S MP8.65 (Exit 13 Northern Blvd) - MP6.39 (Exit 11 Jewel Ave)             | THURSDAY  | 2    | 1516 |
+    | 167 | queens   | BWB S Queens Anchorage - WSE S Exit 14 (Linden Pl)                            | TUESDAY   | 11   | 1516 |
+    | 126 | bronx    | BE N Castle Hill Avenue - Griswold Ave                                        | THURSDAY  | 6    | 1515 |
+    | 211 | queens   | CVE NB GCP - WILLETS PT BLVD                                                  | TUESDAY   | 17   | 1515 |
+    | 184 | bronx    | CBE E TAYLOR AVENUE - CASTLE HILL AVENUE                                      | THURSDAY  | 11   | 1510 |
+    | 167 | queens   | BWB S Queens Anchorage - WSE S Exit 14 (Linden Pl)                            | THURSDAY  | 13   | 1508 |
+    +-----+----------+-------------------------------------------------------------------------------+-----------+------+------+
+
+
+This is interesting because the profile has changed a little bit when we brought hours into play. The roads are consistent, but
+the most popular day for violations is Thursday now. Also, we notice that most violations happen after 8/9pm and no later than
+6/7am. This makes sense because there is probably fewer cops who work in second shift (e.g. at night).
+
+
+
+
+So, to conclude our analysis, we should encourage the police department to follow these guidances:
+- increase presence on road 184, 263, 129, 295, 402 (top 5 roads with most violations in total)
+- Spend more time in the Bronx, Queens and maybe also Brooklyn.
+- Hire more cops who can be on the roads in second shift (8pm to 7am).
+- And in general have higher presence of cops on Thursdays and Tuesdays.

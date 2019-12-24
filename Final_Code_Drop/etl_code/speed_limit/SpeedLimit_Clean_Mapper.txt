@@ -1,0 +1,53 @@
+#!/usr/bin/python
+import sys
+import re
+
+count = 0
+for val in sys.stdin:
+        count += 1
+
+        #print(val.strip().split(","))
+        data = val.strip().split(",")
+        data[1] = data[1].replace("MULTILINESTRING ", "")
+
+        #print(count, data[1], data[2], data[-3], data[-2], data[-1])
+        if 'postvz' not in data[0]:
+
+                data[0] = int(data[0])
+
+        #latitude_start, latitude_end = data[1].split(" ")
+        #latitude_start = float(latitude_start)
+        #latitude_end = float(latitude_end)
+
+        #longitude_start, longitude_end = data[2].split(" ")
+        #longitude_start = float(longitude_start)
+        #longitude_end = float(longitude_end)
+        latitude = data[1]
+        latitude = latitude.replace("(", "")
+        latitude = latitude.replace(",", "")
+        latitude = latitude.replace('"', "")
+        latitude = latitude.replace(')',"")
+        latitude = latitude.split(" ")
+
+        longitude = data[2]
+        longitude = longitude.replace("(", "")
+        longitude = longitude.replace(",", "")
+        longitude = longitude.replace('"', "")
+        longitude = longitude.replace(')',"")
+        longitude = longitude.split(" ")
+
+
+        if len(latitude) > 1 and len(longitude) > 1:
+
+                latitude_start = latitude[0]
+                latitude_end = latitude[1]
+                longitude_start = longitude[1]
+                longitude_end = longitude[2]
+        #if 'a' not in data[2]:
+        #       data[2] = int(data[2])
+                my_str = str(data[0]) + "," + str(latitude_start) + "," + str(latitude_end) + "," + str(longitude_start) + "," + str(longitude_end) + "," + str(data[-3]) + "," + str                                   (data[-2]) + "," + str(data[-1])
+
+                print(my_str)
+        #my_data = ','.join(data)
+        #print(str(count) + str('[') + str(my_data) + str(']'))
+

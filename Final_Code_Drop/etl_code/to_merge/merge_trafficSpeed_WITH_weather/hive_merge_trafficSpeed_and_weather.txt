@@ -1,0 +1,25 @@
+
+create external table speedlimit (speedlimit int, latitudeStart double, longitudeStart double, latitudeEnd double,
+longitudeEnd double, streetname string, signshown string, leng double)
+row format delimited fields terminated by ','
+location '/user/ry856/sharedData/dataToMerge/speedlimit/';
+
+
+Query to merge weather and speed traffic datasets.
+We merged on the date field to match on year,month,day and hour (e.g. yyyyMMddHH):
+
+SELECT merged1.*, weather.speed, weather.visibility, weather.temp, weather.pcp
+FROM trafficspeed
+JOIN weather ON (CAST(trafficspeed.observationtime/100 AS bigint) = CAST(weather.observationdate/100 AS bigint));
+
+Then used this command to save the file on HDFS:
+insert overwrite directory '/user/ry856/merged/' row format delimited fields terminated by ',' select trafficspeed.*, weather.speed, weather.visibility, weather.temp, weather.pcp from trafficspeed JOIN weather ON (CAST(trafficspeed.observationtime/100 AS bigint) = CAST(weather.observationdate/100 AS bigint));
+
+
+
+This was the command to create the table in Hive:
+create external table merged1 (id int, speed double, travelTime double, observationTime bigint, latitudeStart double,
+longitudeStart double, latitudeEnd double, longitudeEnd double, borough string, address string, windspeed double, visibility double,
+temp double, pcp double)
+row format delimited fields terminated by ','
+location '/user/ry856/merged';

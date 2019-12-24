@@ -1,0 +1,255 @@
+ select violation_count.issignshown, violation_count.violations/all_count.all as violation_rate from (select issignshown, count(differencespeedandlimit) as violations from mergedtable where differencespeedandlimit > 15 group by issignshown) violation_count join (select issignshown, count(issignshown) as all from mergedtable group by issignshown) all_count on violation_count.issignshown = all_count.issignshown;
+
+/***
++------------------------------+---------------------+--+
+| violation_count.issignshown  |   violation_rate    |
++------------------------------+---------------------+--+
+| YES                          | 0.4581844948065936  |
+| NO                           | 0.456887980046444   |
++------------------------------+---------------------+--+
+Yes percentage of violation 45.8%
+N0 percentage of violation 45.69%
+Actually similar, from the data we find the existence of signs can't effectively play the role of warning.
+***/
+
+
+select violation_count.windspeed as windspeed, violation_count.violations/all_count.all as violation_rate from (select windspeed, count(differencespeedandlimit) as violations from mergedtable where differencespeedandlimit > 15 group by windspeed) violation_count join (select windspeed, count(windspeed) as all from mergedtable group by windspeed) all_count on violation_count.windspeed = all_count.windspeed order by violation_rate;
+
+/***********
++------------+----------------------+--+
+| windspeed  |    violation_rate    |
++------------+----------------------+--+
+| 20.0       | 0.3005883588989283   |
+| 17.0       | 0.30060552355634323  |
+| 21.0       | 0.35411676134419273  |
+| 18.0       | 0.39140588510042035  |
+| 16.0       | 0.3965780241012864   |
+| 15.0       | 0.4432506313531323   |
+| 7.0        | 0.4436227007758194   |
+| 8.0        | 0.4461891422606865   |
+| 14.0       | 0.44654658056719915  |
+| 6.0        | 0.4481599403698328   |
+| 9.0        | 0.4484300609649856   |
+| 13.0       | 0.44924190165134514  |
+| 10.0       | 0.4503051735950217   |
+| 11.0       | 0.45270060576770454  |
+| 5.0        | 0.45556677903054316  |
+| 3.0        | 0.46216489017527074  |
+| 0.0        | 0.47253654396022676  |
++------------+----------------------+--+
+Obviously, when it is windy, the speeding violations are more likely to happen
+********/
+
+/****to support, try to calculate the correlation between windspeed and differencespeedandlimit ***/
+
+select corr(windspeed,differencespeedandlimit) from mergedtable;
+
+/****
++------------------------+--+
+|          _c0           |
++------------------------+--+
+| -0.023678042782286295  |
++------------------------+--+
+There's a very weak negative correlation between windspeed and differencespeedandlimit.
+****
+/
+
+select violaselect violation_count.pcp as pcp, violation_count.violations/all_count.all as violation_rate from (select pcp, count(differencespeedandlimit) as violations from mergedtable where differencespeedandlimit > 15 group by pcp) violation_count join (select pcp, count(pcp) as all from mergedtable group by pcp) all_count on violation_count.pcp = all_count.pcp order by pcp limit 20;
+
+/****
++-------+----------------------+--+
+|  pcp  |    violation_rate    |
++-------+----------------------+--+
+| 0.0   | 0.4599618274771252   |
+| 0.01  | 0.44309927846540736  |
+| 0.02  | 0.42689914065872764  |
+| 0.03  | 0.44537744122557316  |
+| 0.04  | 0.43594686470034577  |
+| 0.05  | 0.42607623787706117  |
+| 0.06  | 0.446740736476503    |
+| 0.07  | 0.42194785679983887  |
+| 0.08  | 0.43597353348100676  |
+| 0.09  | 0.49601928988041577  |
+| 0.1   | 0.4398607221255015   |
+| 0.11  | 0.4784199860871669   |
+| 0.12  | 0.4715006257347643   |
+| 0.13  | 0.4133043978918464   |
+| 0.14  | 0.4735649546827795   |
+| 0.15  | 0.44308181657536666  |
+| 0.16  | 0.44548205228672805  |
+| 0.17  | 0.5219783044573544   |
+| 0.18  | 0.5127809229713501   |
+| 0.19  | 0.48179142378946155  |
++-------+----------------------+--+
+The relationship is not quite clear
+then we calculated correlation
+***/
+
+select corr(pcp,differencespeedandlimit) from mergedtable;
+/****
++-------------------------+--+
+|           _c0           |
++-------------------------+--+
+| -0.0031372737858959047  |
++-------------------------+--+
+There's a very weak negative correlation between precipitation and differencespeedandlimit.
+****
+/
+
+select violation_count.visibility as visibility, violation_count.violations/all_count.all as violation_rate from (select visibility, count(differencespeedandlimit) as violations from mergedtable where differencespeedandlimit > 15 group by visibility) violation_count join (select visibility, count(visibility) as all from mergedtable group by visibility) all_count on violation_count.visibility = all_count.visibility order by visibility limit 20;
+
+/****
++-------------+----------------------+--+
+| visibility  |    violation_rate    |
++-------------+----------------------+--+
+| 0.0         | 0.18047685234684058  |
+| 0.3         | 0.3713488936041225   |
+| 0.5         | 0.41016063277466114  |
+| 0.8         | 0.43698699194698537  |
+| 1.0         | 0.4577449927546766   |
+| 1.3         | 0.45923376900062063  |
+| 1.5         | 0.4501867685490285   |
+| 1.8         | 0.4469124560301387   |
+| 2.0         | 0.45094384737558013  |
+| 2.5         | 0.4375677287608926   |
+| 3.0         | 0.43892492236303404  |
+| 4.0         | 0.4492242209453348   |
+| 5.0         | 0.42841772106680764  |
+| 6.0         | 0.4580207073706505   |
+| 7.0         | 0.4444070799470849   |
+| 8.0         | 0.4461100061616234   |
+| 9.1         | 0.45444257944246397  |
+| 10.0        | 0.46450115411804344  |
++-------------+----------------------+--+
+Generally speaking, when visibility is high(>=7), the speeding violations are more likely to
+****
+/
+
+
+select corr(visibility,differencespeedandlimit) from mergedtable;
+/****
++----------------------+--+
+|         _c0          |
++----------------------+--+
+| 0.02039549641788092  |
++----------------------+--+
+There's a weak positive correlation between visibility and differencespeedandlimit.
+****
+/
+
+select violation_count.temperature as temperature, violation_count.violations/all_count.all as violation_rate from (select temperature, count(differencespeedandlimit) as violations from mergedtable where differencespeedandlimit > 15 group by temperature) violation_count join (select temperature, count(temperature) as all from mergedtable group by temperature) all_count on violation_count.temperature = all_count.temperature order by temperature;
+
+/***
+
++--------------+----------------------+--+
+| temperature  |    violation_rate    |
++--------------+----------------------+--+
+| 5.0          | 0.63776559287183     |
+| 6.0          | 0.6629990125546622   |
+| 7.0          | 0.6432917554000609   |
+| 8.0          | 0.6180254693448864   |
+| 9.0          | 0.5940588129604121   |
+| 10.0         | 0.5759573132454489   |
+| 11.0         | 0.5632100396301188   |
+| 12.0         | 0.5523938968782883   |
+| 13.0         | 0.503374065292723    |
+| 14.0         | 0.4664803167947822   |
+| 15.0         | 0.5027067908606002   |
+| 16.0         | 0.6169500847962598   |
+| 17.0         | 0.6005561290050768   |
+| 18.0         | 0.5612991375138766   |
+| 19.0         | 0.4968819038563718   |
+| 20.0         | 0.4868734531492147   |
+| 21.0         | 0.4405531302587615   |
+| 22.0         | 0.4598010661097983   |
+| 23.0         | 0.42175800145782255  |
+| 24.0         | 0.45504323451159256  |
+| 25.0         | 0.4339619947746384   |
+| 26.0         | 0.44174170662300705  |
+| 27.0         | 0.45480182607603065  |
+| 28.0         | 0.45842496725888954  |
+| 29.0         | 0.5381526104417671   |
+| 30.0         | 0.48832071239438046  |
+| 31.0         | 0.47259760229020037  |
+| 32.0         | 0.48855293453234283  |
+| 33.0         | 0.4990518800442681   |
+| 34.0         | 0.5175182323789738   |
+| 35.0         | 0.47268774382314693  |
+| 36.0         | 0.492541099493041    |
+| 37.0         | 0.4991114233757646   |
+| 38.0         | 0.5125700789510528   |
+| 39.0         | 0.4957597320555913   |
+| 40.0         | 0.5114260687258576   |
+| 41.0         | 0.4998940422727787   |
+| 42.0         | 0.4643872804378769   |
+| 43.0         | 0.48328107477170257  |
+| 44.0         | 0.47470821002227914  |
+| 45.0         | 0.47024748333153554  |
+| 46.0         | 0.47961691543756435  |
+| 47.0         | 0.46584641939965477  |
+| 48.0         | 0.47711620393491544  |
+| 49.0         | 0.47030401505109676  |
+| 50.0         | 0.4615591763457824   |
+| 51.0         | 0.4698055550813459   |
+| 52.0         | 0.47062894757151996  |
+| 53.0         | 0.44219041692594896  |
+| 54.0         | 0.428834750049472    |
+| 55.0         | 0.46186009518879956  |
+| 56.0         | 0.4522344247394122   |
+| 57.0         | 0.4392086915341885   |
+| 58.0         | 0.47587033551683894  |
+| 59.0         | 0.4679074962387527   |
+| 60.0         | 0.4509304483101321   |
+| 61.0         | 0.4580753446765343   |
+| 62.0         | 0.44845706808153013  |
+| 63.0         | 0.4556586243538249   |
+| 64.0         | 0.4515840975322835   |
+| 65.0         | 0.43716681965642873  |
+| 66.0         | 0.4278495145394738   |
+| 67.0         | 0.43803381703807087  |
+| 68.0         | 0.4453538750460705   |
+| 69.0         | 0.43913417017038325  |
+| 70.0         | 0.4537459271864066   |
+| 71.0         | 0.46807038772059434  |
+| 72.0         | 0.4625309106547683   |
+| 73.0         | 0.4772912884581481   |
+| 74.0         | 0.46683935953210465  |
+| 75.0         | 0.4357541393017237   |
+| 76.0         | 0.4505552236851796   |
+| 77.0         | 0.44014950755793314  |
+| 78.0         | 0.4328957835231413   |
+| 79.0         | 0.43209683805645116  |
+| 80.0         | 0.39931873739330226  |
+| 81.0         | 0.3921406506938788   |
+| 82.0         | 0.4056361669588571   |
+| 83.0         | 0.4381801190908319   |
+| 84.0         | 0.4276393585461486   |
+| 85.0         | 0.4234424824064194   |
+| 86.0         | 0.3896062336997392   |
+| 87.0         | 0.38612916635174965  |
+| 88.0         | 0.3760556684973349   |
+| 89.0         | 0.3852760526270766   |
+| 90.0         | 0.36737457108411387  |
+| 91.0         | 0.3854979217673518   |
+| 92.0         | 0.3225602263841829   |
+| 93.0         | 0.38371335504885995  |
+| 94.0         | 0.3894540363975735   |
+| 95.0         | 0.31468849477035016  |
++--------------+----------------------+--+
+When extreme temperatures have different impact on speeding violations. When temperature is very low(<=20), the speeding violations are more likely to happen while when temperature is very high, the speeding violations generally less likely to happen.
+***/
+
+
+select corr(temperature,differencespeedandlimit) from mergedtable;
+/***
++----------------------+--+
+|         _c0          |
++----------------------+--+
+| -0.0537338061300584  |
++----------------------+--+
+There's a weak negative correlation between temperature and differencespeedandlimit.
+***
+/
+
+
+
