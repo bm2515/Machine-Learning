@@ -1,0 +1,63 @@
+***all analysis was done on the Traffic Speeds dataset
+
+
+create external table project (id int, speed string, travelTime string, observationTime bigint, latitudeStart double,
+longitudeStart double, latitudeEnd double, longitudeEnd double, borough string, address string)
+row format delimited fields terminated by ','
+location '/user/ry856/sharedData/TrafficSpeed/outputCleanData/';
+
+
+select AVG(speed) as `average_speed`, borough from project GROUP BY borough ORDER BY borough;
+
+output:
++---------------------+----------------+--+
+|    average_speed    |    borough     |
++---------------------+----------------+--+
+| 39.2096586523081    | bronx          |
+| 40.15131313848992   | brooklyn       |
+| 26.18155600162842   | manhattan      |
+| 39.982421901155305  | queens         |
+| 49.2800504148358    | staten island  |
++---------------------+----------------+--+
+
+we see that some boroughs have an average speed that is higher than others. In our further analysis, we will investigate the reason for this variation.
+One reason could be that the roads in some boroughs have less cogestions.
+Another reason, is that some boroughs have a stricter speeding limits. Or perhaps, police cars have higher presense in some places than others.
+We will be able to answers all these questions in further analysis.
+
+
+
+
+SELECT A.borough AS `borough`, A.observationyear AS `observation_year`, AVG(s) AS `average_speed` FROM
+(select borough, date_format(observationtime, 'yyyy') observationyear, avg(speed) s from project GROUP BY borough, date_format(observationtime, 'yyyy')) A
+GROUP BY A.borough, A.observationyear ORDER BY A.borough, observationyear;
+
+Here we tried to see if over the years the average speeds went up or down. We do see that between the years 2017-2019 the average speeds went down in some boroughs and up in others. We will need
+to investigate further.
+
+output:
++----------------+-------------------+---------------------+--+
+|    borough     | observation_year  |    average_speed    |
++----------------+-------------------+---------------------+--+
+| bronx          | 2014              | 41.01               |
+| bronx          | 2017              | 39.52927050037334   |
+| bronx          | 2018              | 39.40704481321499   |
+| bronx          | 2019              | 38.76847671286558   |
+| brooklyn       | 2017              | 40.79938861437036   |
+| brooklyn       | 2018              | 40.961988649389994  |
+| brooklyn       | 2019              | 38.6885098073967    |
+| manhattan      | 2015              | 16.017777777777777  |
+| manhattan      | 2016              | 34.18               |
+| manhattan      | 2017              | 25.064813138139176  |
+| manhattan      | 2018              | 26.023908664144706  |
+| manhattan      | 2019              | 27.051236022951358  |
+| queens         | 2016              | 18.887999999999998  |
+| queens         | 2017              | 39.13446668906766   |
+| queens         | 2018              | 40.18702346674185   |
+| queens         | 2019              | 40.20034800052101   |
+| staten island  | 2014              | 26.249999999999996  |
+| staten island  | 2016              | 42.74733333333334   |
+| staten island  | 2017              | 46.12706944861238   |
+| staten island  | 2018              | 49.81695435090496   |
+| staten island  | 2019              | 49.42133591218573   |
++----------------+-------------------+---------------------+--+

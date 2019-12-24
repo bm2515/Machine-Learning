@@ -1,0 +1,137 @@
+Last login: Sun Dec  1 17:37:54 on ttys001
+(base) 10-21-182-201:~ Bilal$ ssh -Y bm2515@dumbo.es.its.nyu.edu
+Password: 
+Last login: Sat Nov 23 15:48:54 2019 from 10-21-237-202.dynapool.wireless.nyu.edu
+Rocks 6.2 (SideWinder)
+Profile built 16:54 24-Aug-2015
+
+Kickstarted 16:58 24-Aug-2015
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   THIS NYU-OPERATED FACILITY MAY BE ACCESSED ONLY BY AUTHORIZED USERS.
+               UNAUTHORIZED PERSONS ... TYPE 'exit' NOW
+ See https://wikis.nyu.edu/display/NYUHPC/NYU+HPC+Access+Policy for details
+ of the access policy. Questions regarding the access policy should be
+ directed (by e-mail) to security@nyu.edu or (by phone) to 212-998-3333
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                  WELCOME TO
+***************************************************************************
+     _____          ___           ___          _____          ___     
+    /  /::\        /__/\         /__/\        /  /::\        /  /\    
+   /  /:/\:\       \  \:\       |  |::\      /  /:/\:\      /  /::\   
+  /  /:/  \:\       \  \:\      |  |:|:\    /  /:/~/::\    /  /:/\:\  
+ /__/:/ \__\:|  ___  \  \:\   __|__|:|\:\  /__/:/ /:/\:|  /  /:/  \:\ 
+ \  \:\ /  /:/ /__/\  \__\:\ /__/::::| \:\ \  \:\/:/~/:/ /__/:/ \__\:\
+  \  \:\  /:/  \  \:\ /  /:/ \  \:\~~\__\/  \  \::/ /:/  \  \:\ /  /:/
+   \  \:\/:/    \  \:\  /:/   \  \:\         \  \:\/:/    \  \:\  /:/ 
+    \  \::/      \  \:\/:/     \  \:\         \  \::/      \  \:\/:/  
+     \__\/        \  \::/       \  \:\         \__\/        \  \::/   
+                   \__\/         \__\/                       \__\/    
+
+***************************************************************************
+              https://wikis.nyu.edu/display/NYUHPC/Clusters+-+Dumbo
+***************************************************************************
+[bm2515@login-1-1 ~]$ vi slMapper.py
+[bm2515@login-1-1 ~]$ ls
+cleanspeedlimit.txt          pig_1570651488022.log
+-D                           pig_1570652225532.log
+downloads                    pig_1570652276081.log
+Inputs.txt                   pig_1570652335910.log
+Input.txt                    pig_1570679318532.log
+MaxTemperature.class         pig_1570679483368.log
+MaxTemperature.java          pig_1570679704789.log
+MaxTemperatureMapper.class   pig_1570679778177.log
+MaxTemperatureMapper.java    pig_1570679873639.log
+MaxTemperatureMapper.py      pig_1570680358413.log
+MaxTemperatureReducer.class  pig_1570680488326.log
+MaxTemperatureReducer.java   pig_1570907278506.log
+MaxTemperatureReducer.py     pig_1570907362117.log
+maxTemp.jar                  pig_1570907956458.log
+output                       pig_1570908320754.log
+PageRank.txt                 pig_1570908441259.log
+part-00000                   pig_1570909771736.log
+part-00001                   pig_1570910224229.log
+pig_1570472664623.log        PRMapper.py
+pig_1570472780443.log        PRReducer.py
+pig_1570472940924.log        slMapper.py
+pig_1570473472607.log        smallWeather1.txt
+pig_1570473520851.log        speedlimitCleanMapper.py
+pig_1570476061627.log        speedlimit.csv
+pig_1570497637053.log        speedlimitMapper.py
+pig_1570497723406.log        speedlimitReducer.py
+pig_1570498191352.log        speedlimit_weather_trafficspeed
+pig_1570501006421.log        speelimitCleanMapper.py
+pig_1570501288973.log        temperatureInputs.txt
+pig_1570567270318.log        test.txt
+pig_1570567441416.log        text.txt
+pig_1570567854148.log        tt.pig
+pig_1570567873525.log        wcc.pig
+pig_1570567911686.log        wcMapper.py
+pig_1570568895495.log        wcMappery.py
+pig_1570568955415.log        wc.pig
+pig_1570569031653.log        WC.pig
+pig_1570569299420.log        wcReducer.py
+pig_1570572232756.log        wctest.pig
+pig_1570573776588.log        wordCount_withoutMapReduce.py
+pig_1570574234450.log        WordCount_withoutMapReduce.py
+pig_1570575490508.log        wrdcount.pig
+pig_1570576978620.log        wwc.pig
+pig_1570577006108.log
+[bm2515@login-1-1 ~]$ vi speedlimitMapper.py
+[bm2515@login-1-1 ~]$ vi speedlimitReducer.py
+
+#!/usr/bin/python
+import sys
+import re
+
+max_speed = 0
+min_speed = 0
+speed_count = 0
+signedNo = 0
+signedYes = 1
+shpmax = 0
+shpmin = 60
+max_len_street = 0
+for val in sys.stdin:
+        key, value = val.strip().split(", ")
+
+        if '4' in key:
+                if len(value) > max_len_street:
+                        max_len_street = len(value)
+
+
+
+
+
+        if '3' in key:
+
+                if 'h' not in value:
+                        for char in "-:'(;)'#,\n":
+                                value = value.replace(char, "")
+                        print(value)
+
+                        if float(value) > shpmax:
+                                shpmax = float(value)
+                        if float(value) < shpmin:
+                                shpmin = float(value)
+                        #print(int(value))
+                        #my_val = value[1:6]
+                        #print(int(my_val))
+
+                        #my_val = value[:len(value) - 3]
+                        #my_val = my_val[1:]
+                        #print(int(my_val))
+
+
+
+        if '2' in key:
+                if 'YES' in value:
+                        signedYes += 1
+                if 'NO' in value:
+                        signedNo += 1
+
+        #Address Speedlimit
+        if '1' in key:
+                if 'p' not in value:
+                        speed_count += 1
+                        my_val = value[1:3]
+                                                                                                                                                                   1,17          Top

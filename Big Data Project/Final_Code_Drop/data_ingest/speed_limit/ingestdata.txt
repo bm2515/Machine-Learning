@@ -1,0 +1,129 @@
+(base) 10-17-66-215:downloads Bilal$ pwd
+/Users/Bilal/downloads
+(base) 10-17-66-215:downloads Bilal$ scp ./speedlimit.csv bm2515@dumbo.es.its.nyu.edu:/home/bm2515
+Password: 
+speedlimit.csv                                100%   22MB   7.5MB/s   00:02    
+(base) 10-17-66-215:downloads Bilal$ ssh -Y bm2515@dumbo.es.its.nyu.edu
+Password: 
+Last login: Wed Nov  6 14:42:13 2019 from dumbo0.es.its.nyu.edu
+Rocks 6.2 (SideWinder)
+Profile built 16:54 24-Aug-2015
+
+Kickstarted 16:58 24-Aug-2015
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   THIS NYU-OPERATED FACILITY MAY BE ACCESSED ONLY BY AUTHORIZED USERS.
+               UNAUTHORIZED PERSONS ... TYPE 'exit' NOW
+ See https://wikis.nyu.edu/display/NYUHPC/NYU+HPC+Access+Policy for details
+ of the access policy. Questions regarding the access policy should be
+ directed (by e-mail) to security@nyu.edu or (by phone) to 212-998-3333
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                  WELCOME TO
+***************************************************************************
+     _____          ___           ___          _____          ___     
+    /  /::\        /__/\         /__/\        /  /::\        /  /\    
+   /  /:/\:\       \  \:\       |  |::\      /  /:/\:\      /  /::\   
+  /  /:/  \:\       \  \:\      |  |:|:\    /  /:/~/::\    /  /:/\:\  
+ /__/:/ \__\:|  ___  \  \:\   __|__|:|\:\  /__/:/ /:/\:|  /  /:/  \:\ 
+ \  \:\ /  /:/ /__/\  \__\:\ /__/::::| \:\ \  \:\/:/~/:/ /__/:/ \__\:\
+  \  \:\  /:/  \  \:\ /  /:/ \  \:\~~\__\/  \  \::/ /:/  \  \:\ /  /:/
+   \  \:\/:/    \  \:\  /:/   \  \:\         \  \:\/:/    \  \:\  /:/ 
+    \  \::/      \  \:\/:/     \  \:\         \  \::/      \  \:\/:/  
+     \__\/        \  \::/       \  \:\         \__\/        \  \::/   
+                   \__\/         \__\/                       \__\/    
+
+***************************************************************************
+              https://wikis.nyu.edu/display/NYUHPC/Clusters+-+Dumbo
+***************************************************************************
+[bm2515@login-1-1 ~]$ ls
+-D                           pig_1570577006108.log
+Inputs.txt                   pig_1570651488022.log
+Input.txt                    pig_1570652225532.log
+MaxTemperature.class         pig_1570652276081.log
+MaxTemperature.java          pig_1570652335910.log
+MaxTemperatureMapper.class   pig_1570679318532.log
+MaxTemperatureMapper.java    pig_1570679483368.log
+MaxTemperatureMapper.py      pig_1570679704789.log
+MaxTemperatureReducer.class  pig_1570679778177.log
+MaxTemperatureReducer.java   pig_1570679873639.log
+MaxTemperatureReducer.py     pig_1570680358413.log
+maxTemp.jar                  pig_1570680488326.log
+PageRank.txt                 pig_1570907278506.log
+pig_1570472664623.log        pig_1570907362117.log
+pig_1570472780443.log        pig_1570907956458.log
+pig_1570472940924.log        pig_1570908320754.log
+pig_1570473472607.log        pig_1570908441259.log
+pig_1570473520851.log        pig_1570909771736.log
+pig_1570476061627.log        pig_1570910224229.log
+pig_1570497637053.log        PRMapper.py
+pig_1570497723406.log        PRReducer.py
+pig_1570498191352.log        smallWeather1.txt
+pig_1570501006421.log        speedlimit.csv
+pig_1570501288973.log        temperatureInputs.txt
+pig_1570567270318.log        test.txt
+pig_1570567441416.log        tt.pig
+pig_1570567854148.log        wcc.pig
+pig_1570567873525.log        wcMapper.py
+pig_1570567911686.log        wcMappery.py
+pig_1570568895495.log        wc.pig
+pig_1570568955415.log        WC.pig
+pig_1570569031653.log        wcReducer.py
+pig_1570569299420.log        wctest.pig
+pig_1570572232756.log        wordCount_withoutMapReduce.py
+pig_1570573776588.log        WordCount_withoutMapReduce.py
+pig_1570574234450.log        wrdcount.pig
+pig_1570575490508.log        wwc.pig
+pig_1570576978620.log
+
+[bm2515@login-1-1 ~]$ ls
+-D                           pig_1570577006108.log
+Inputs.txt                   pig_1570651488022.log
+Input.txt                    pig_1570652225532.log
+MaxTemperature.class         pig_1570652276081.log
+MaxTemperature.java          pig_1570652335910.log
+MaxTemperatureMapper.class   pig_1570679318532.log
+MaxTemperatureMapper.java    pig_1570679483368.log
+MaxTemperatureMapper.py      pig_1570679704789.log
+MaxTemperatureReducer.class  pig_1570679778177.log
+MaxTemperatureReducer.java   pig_1570679873639.log
+MaxTemperatureReducer.py     pig_1570680358413.log
+maxTemp.jar                  pig_1570680488326.log
+PageRank.txt                 pig_1570907278506.log
+pig_1570472664623.log        pig_1570907362117.log
+pig_1570472780443.log        pig_1570907956458.log
+pig_1570472940924.log        pig_1570908320754.log
+pig_1570473472607.log        pig_1570908441259.log
+pig_1570473520851.log        pig_1570909771736.log
+pig_1570476061627.log        pig_1570910224229.log
+pig_1570497637053.log        PRMapper.py
+pig_1570497723406.log        PRReducer.py
+pig_1570498191352.log        smallWeather1.txt
+pig_1570501006421.log        speedlimit.csv
+pig_1570501288973.log        temperatureInputs.txt
+pig_1570567270318.log        test.txt
+pig_1570567441416.log        tt.pig
+pig_1570567854148.log        wcc.pig
+pig_1570567873525.log        wcMapper.py
+pig_1570567911686.log        wcMappery.py
+pig_1570568895495.log        wc.pig
+pig_1570568955415.log        WC.pig
+pig_1570569031653.log        wcReducer.py
+pig_1570569299420.log        wctest.pig
+pig_1570572232756.log        wordCount_withoutMapReduce.py
+pig_1570573776588.log        WordCount_withoutMapReduce.py
+pig_1570574234450.log        wrdcount.pig
+pig_1570575490508.log        wwc.pig
+pig_1570576978620.log
+[bm2515@login-1-1 ~]$ pwd
+/home/bm2515
+[bm2515@login-1-1 ~]$ hdfs dfs -put /home/bm2515/speedlimit.csv myHDFSFolder
+[bm2515@login-1-1 ~]$ hdfs dfs -ls /user/bm2515
+Found 6 items
+drwx------+  - bm2515 users          0 2019-09-24 15:00 /user/bm2515/.Trash
+drwx------+  - bm2515 users          0 2019-10-12 15:51 /user/bm2515/.staging
+drwxrwxr-x+  - bm2515 users          0 2019-09-22 23:05 /user/bm2515/class1
+drwxr-xr-x+  - bm2515 users          0 2019-10-30 19:56 /user/bm2515/hiveInput
+drwxr-xr-x+  - bm2515 users          0 2019-10-30 16:26 /user/bm2515/impalaInput
+-rw-r--r--+  3 bm2515 users   22797208 2019-11-06 14:57 /user/bm2515/myHDFSFolder
+[bm2515@login-1-1 ~]$ hdfs dfs -ls /user/bm2515/myHDFSFolder
+-rw-r--r--+  3 bm2515 users   22797208 2019-11-06 14:57 /user/bm2515/myHDFSFolder
+[bm2515@login-1-1 ~]$ 
