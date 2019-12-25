@@ -9,4 +9,4 @@ This Repositories contain the Python and Java code & Documentation for the Follo
 5) Automated Data Preperation Library
 6) HSBC DATA SCIENCE CONTEST REPORT
 
-![](bm2515/Machine-Learning/bilal_headShot.png)
+![](Machine-Learning/bilal_headShot.png)
