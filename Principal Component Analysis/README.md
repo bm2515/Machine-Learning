@@ -1,5 +1,3 @@
-# Machine-Learning
+# Eigenfaces
 
-The working data file for PRINCIPAL COMPONENT ANALYSIS is "faces.csv". Refer to the code for detailed understanding.
-
-The working data file for NEURAL NETWORKS is the files starting with "ps5" convention. Refer to the code for detailed understanding
+This repository contains a python3 code for principal component applied to Eigenfaces. Eigenfaces is an appearance-based approach to face recognition that captures the variation in face images to encode and compare images of individual faces in a holistic (as opposed to a parts-based or feature-based) manner. Eigenfaces uses a statistical techique Principal Component Analysis to reduce the dimensionality of large images and return the eigenvectors/Principal Components/eigenfaces that have dimensionality less than the dimesionality of the original image, but still can best approximate the original image. In simple words, representing the image as accurately as possible using as minimum as possible dimensions. I have included the dataset  dataset (Oviletti face dataset) 'faces.csv' in this repository. It contains 400 face images, each defined by its pixel values on a greyscale (0-255). The original dimension of each image is 64 x 64 (i.e. 1 x 4096 vector of pixel values for each image). I'm also attaching a so called 'Eigenfaces tutorial' that will guide you through the mathematical steps of calculatig the Eigenvectors/Pricipal Components/Eigenfaces.
